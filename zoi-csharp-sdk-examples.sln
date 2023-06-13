@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1705.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zoi-csharp-sdk-examples", "zoi-csharp-sdk-examples\zoi-csharp-sdk-examples.csproj", "{A7A3821D-56E1-4F8F-8434-FF05D5EB53BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7A3821D-56E1-4F8F-8434-FF05D5EB53BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7A3821D-56E1-4F8F-8434-FF05D5EB53BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7A3821D-56E1-4F8F-8434-FF05D5EB53BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7A3821D-56E1-4F8F-8434-FF05D5EB53BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C613C998-7D0A-40ED-8B6A-97F1DA6115EF}
+	EndGlobalSection
+EndGlobal
