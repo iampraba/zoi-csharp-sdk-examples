@@ -8,9 +8,9 @@ using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 
-namespace Writer
+namespace Documents
 {
-    class PreviewDocument
+    class DeleteDocumentSession
     {
         static void execute(String[] args)
         {
@@ -21,23 +21,24 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                PreviewParameters parameters = new PreviewParameters();
+                CreateDocumentParameters parameter = new CreateDocumentParameters();
 
-                parameters.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
-
-                //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
-                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
-
-                //parameters.Document = documentStreamWrapper;
-
-                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocumentPreview(parameters);
+                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(parameter);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    PreviewResponse previewResponse = (PreviewResponse)response.Object;
+                    CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
+                    string sessionId = createDocumentResponse.SessionId;
 
-                    Console.WriteLine("Document Preview URL - {0}", previewResponse.PreviewUrl);
+                    Console.WriteLine("Document Session To Be Deleted - {0}", sessionId);
+
+                    APIResponse<WriterResponseHandler> response1 = sdkOperations.DeleteSession(sessionId);
+
+                    DocumentSessionDeleteSuccessResponse deleteSuccessResponse = (DocumentSessionDeleteSuccessResponse)response1.Object;
+
+                    Console.WriteLine("Document Session Delete Status - {0}", deleteSuccessResponse.SessionDeleted);
+
                 }
                 else
                 {
@@ -53,7 +54,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in creating document preview session url - ", e);
+                Console.WriteLine("Exception in delete document session - ", e);
             }
         }
 

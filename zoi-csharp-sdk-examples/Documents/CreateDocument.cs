@@ -7,13 +7,12 @@ using Com.Zoho.API.Authenticator;
 using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class GetDocumentSessions
+    class CreateDocument
     {
-        static void execute(String[] args)
+        static void Main(String[] args)
         {
             try
             {
@@ -23,8 +22,6 @@ namespace Writer
 
                 V1Operations sdkOperations = new V1Operations();
                 CreateDocumentParameters createDocumentParams = new CreateDocumentParameters();
-
-                createDocumentParams.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
 
                 DocumentInfo documentInfo = new DocumentInfo();
 
@@ -41,6 +38,69 @@ namespace Writer
 
                 createDocumentParams.UserInfo = userInfo;
 
+                Margin margin = new Margin();
+
+                margin.Top = "2in";
+                margin.Bottom = "2in";
+                margin.Left = "2in";
+                margin.Right = "2in";
+
+                DocumentDefaults documentDefault = new DocumentDefaults();
+
+                documentDefault.FontSize = 14;
+                documentDefault.FontName = "Arial";
+                documentDefault.PaperSize = "Letter";
+                documentDefault.Orientation = "portrait";
+                documentDefault.TrackChanges = "disabled";
+
+                documentDefault.Margin = margin;
+                createDocumentParams.DocumentDefaults = documentDefault;
+
+                EditorSettings editorSettings = new EditorSettings();
+
+                editorSettings.Unit = "in";
+                editorSettings.Language = "en";
+                editorSettings.View = "pageview";
+                createDocumentParams.EditorSettings = editorSettings;
+
+                UiOptions uiOptions = new UiOptions();
+
+                uiOptions.ChatPanel = "show";
+                uiOptions.DarkMode = "show";
+                uiOptions.FileMenu = "show";
+                uiOptions.SaveButton = "show";
+
+                createDocumentParams.UiOptions = uiOptions;
+
+                Dictionary<string, object> permissions = new Dictionary<string, object>();
+
+                permissions.Add("collab.chat", false);
+                permissions.Add("document.edit", true);
+                permissions.Add("review.comment", false);
+                permissions.Add("document.export", true);
+                permissions.Add("document.print", false);
+                permissions.Add("document.fill", false);
+                permissions.Add("review.changes.resolve", false);
+                permissions.Add("document.pausecollaboration", false);
+
+                createDocumentParams.Permissions = permissions;
+
+                Dictionary<string, object> saveUrlParams = new Dictionary<string, object>();
+
+                saveUrlParams.Add("id", 123456789);
+                saveUrlParams.Add("auth_token", "oswedf32rk");
+
+                CallbackSettings callbackSettings = new CallbackSettings();
+
+                callbackSettings.Retries = 2;
+                callbackSettings.Timeout = 10000;
+                callbackSettings.SaveFormat = "docx";
+                callbackSettings.HttpMethodType = "post";
+                callbackSettings.SaveUrlParams = saveUrlParams;
+                callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157123434d4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
+
+                createDocumentParams.CallbackSettings = callbackSettings;
+
                 APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(createDocumentParams);
                 int responseStatusCode = response.StatusCode;
 
@@ -50,47 +110,7 @@ namespace Writer
 
                     Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
                     Console.WriteLine("Document session id - {0}", documentResponse.SessionId);
-                    Console.WriteLine("Document session1 url - {0}", documentResponse.DocumentUrl);
-
-                    userInfo.UserId = "1000";
-                    userInfo.DisplayName = "Praba";
-
-                    createDocumentParams.UserInfo = userInfo;
-
-                    response = sdkOperations.CreateDocument(createDocumentParams);
-
-                    if (responseStatusCode >= 200 && responseStatusCode <= 299)
-                    {
-                        documentResponse = (CreateDocumentResponse) response.Object;
-
-                        Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
-                        Console.WriteLine("Document session2 id - {0}", documentResponse.SessionId);
-                        Console.WriteLine("Document session2 url - {0}", documentResponse.DocumentUrl);
-
-                        response = sdkOperations.GetAllSessions(documentInfo.DocumentId);
-
-                        if (responseStatusCode >= 200 && responseStatusCode <= 299)
-                        {
-                            AllSessionsResponse allSessionsMeta = (AllSessionsResponse)response.Object;
-
-                            Console.WriteLine("Document id - {0}", allSessionsMeta.DocumentId);
-                            Console.WriteLine("Document Name - {0}", allSessionsMeta.DocumentName);
-                            Console.WriteLine("Document Type - {0}", allSessionsMeta.DocumentType);
-                            Console.WriteLine("Document Expires on - {0}", allSessionsMeta.ExpiresOn);
-                            Console.WriteLine("Document Created on - {0}", allSessionsMeta.CreatedTime);
-                            Console.WriteLine("Active sessions count - {0}", allSessionsMeta.ActiveSessionsCount);
-                            Console.WriteLine("Collaborators count - {0}", allSessionsMeta.CollaboratorsCount);
-                            List<SessionMeta> sessions = allSessionsMeta.Sessions;
-
-                            foreach (SessionMeta sessionMeta in sessions)
-                            {
-                                Console.WriteLine("Session status- {0}", sessionMeta.Status);
-                                Console.WriteLine("Session User ID - {0}", sessionMeta.UserInfo.UserId);
-                                Console.WriteLine("Session User Display Name - {0}", sessionMeta.UserInfo.DisplayName);
-                                Console.WriteLine("Session Expires on - {0}", sessionMeta.Info.ExpiresOn);
-                            }
-                        }
-                    }
+                    Console.WriteLine("Document session url - {0}", documentResponse.DocumentUrl);
                 }
                 else
                 {
@@ -106,7 +126,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in getting document sessions details - ", e);
+                Console.WriteLine("Exception in creating document session url - ", e);
             }
         }
 

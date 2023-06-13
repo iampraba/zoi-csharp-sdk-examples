@@ -7,11 +7,10 @@ using Com.Zoho.API.Authenticator;
 using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class WatermarkDocument
+    class CompareDocument
     {
         static void execute(String[] args)
         {
@@ -22,36 +21,35 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                WatermarkParameters waterMarkParams = new WatermarkParameters();
+                CompareDocumentParameters compareParameters = new CompareDocumentParameters();
 
-                waterMarkParams.Url = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx";
+                compareParameters.Url1 = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx";
+                compareParameters.Url2 = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v1.docx";
 
-                WatermarkSettings waterMarkSettings = new WatermarkSettings();
+                String file1Name = "MS_Word_Document_v0.docx";
+                String file2Name = "MS_Word_Document_v1.docx";
 
-                waterMarkSettings.Type = "text";
-                waterMarkSettings.FontSize = 36;
-                waterMarkSettings.Opacity = 70.00;
-                waterMarkSettings.FontName = "Arial";
-                waterMarkSettings.FontColor = "#000000";
-                waterMarkSettings.Orientation = "horizontal";
-                waterMarkSettings.Text = "Sample Water Mark Text";
+                /* String inputFile1Path = Path.Combine(Environment.CurrentDirectory, "sample_documents", "MS_Word_Document_v0.docx");
+                StreamWrapper file1StreamWrapper = new StreamWrapper(inputFile1Path);
 
-                waterMarkParams.WatermarkSettings = waterMarkSettings;
+                compareParameters.Document1 = file1StreamWrapper;
 
-                APIResponse<WriterResponseHandler> response = sdkOperations.CreateWatermarkDocument(waterMarkParams);
+                String inputFile2Path = Path.Combine(Environment.CurrentDirectory, "sample_documents", "MS_Word_Document_v1.docx");
+                StreamWrapper file2StreamWrapper = new StreamWrapper(inputFile2Path);
+
+                compareParameters.Document2 = file2StreamWrapper; */
+
+                compareParameters.Lang = "en";
+                compareParameters.Title = file1Name + " vs " + file2Name;
+
+                APIResponse<WriterResponseHandler> response = sdkOperations.CompareDocument(compareParameters);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
-                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "WaterMarkedDocument.docx");
-                    using (Stream inputStream = fileBodyWrapper.File.Stream)
-                    using (Stream outputStream = File.OpenWrite(outputFilePath))
-                    {
-                        inputStream.CopyTo(outputStream);
-                    }
+                    CompareDocumentResponse compareResponse = (CompareDocumentResponse)response.Object;
 
-                    Console.WriteLine($"Watermark document saved in output file path - {outputFilePath}");
+                    Console.WriteLine("Compared URL - {0}", compareResponse.CompareUrl);
                 }
                 else
                 {
@@ -67,7 +65,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in watermarking document - ", e);
+                Console.WriteLine("Exception in creating document compare url - ", e);
             }
         }
 

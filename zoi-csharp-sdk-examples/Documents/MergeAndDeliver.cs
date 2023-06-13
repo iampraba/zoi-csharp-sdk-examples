@@ -7,10 +7,11 @@ using Com.Zoho.API.Authenticator;
 using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class CompareDocument
+    class MergeAndDeliver
     {
         static void execute(String[] args)
         {
@@ -21,35 +22,38 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                CompareDocumentParameters compareParameters = new CompareDocumentParameters();
+                MergeAndDeliverViaWebhookParameters parameters = new MergeAndDeliverViaWebhookParameters();
 
-                compareParameters.Url1 = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx";
-                compareParameters.Url2 = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v1.docx";
+                parameters.FileUrl = "https://demo.office-integrator.com/zdocs/OfferLetter.zdoc";
+                parameters.MergeDataJsonUrl = "https://demo.office-integrator.com/data/candidates.json";
 
-                String file1Name = "MS_Word_Document_v0.docx";
-                String file2Name = "MS_Word_Document_v1.docx";
+                //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
+                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
 
-                /* String inputFile1Path = Path.Combine(Environment.CurrentDirectory, "sample_documents", "MS_Word_Document_v0.docx");
-                StreamWrapper file1StreamWrapper = new StreamWrapper(inputFile1Path);
+                //parameters.FileUrl = documentStreamWrapper;
 
-                compareParameters.Document1 = file1StreamWrapper;
+                DocumentConversionOutputOptions outputOptions = new DocumentConversionOutputOptions();
 
-                String inputFile2Path = Path.Combine(Environment.CurrentDirectory, "sample_documents", "MS_Word_Document_v1.docx");
-                StreamWrapper file2StreamWrapper = new StreamWrapper(inputFile2Path);
+                parameters.OutputFormat = "zdoc";
+                parameters.MergeTo = "separatedoc";
+                parameters.Password = "***";
 
-                compareParameters.Document2 = file2StreamWrapper; */
+                MailMergeWebhookSettings webhookSettings = new MailMergeWebhookSettings();
 
-                compareParameters.Lang = "en";
-                compareParameters.Title = file1Name + " vs " + file2Name;
+                webhookSettings.InvokeUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157a25e63fc4dfd4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
+                webhookSettings.InvokePeriod = "oncomplete";
 
-                APIResponse<WriterResponseHandler> response = sdkOperations.CompareDocument(compareParameters);
+                parameters.Webhook = webhookSettings;
+
+                APIResponse<WriterResponseHandler> response = sdkOperations.MergeAndDeliverViaWebhook(parameters);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    CompareDocumentResponse compareResponse = (CompareDocumentResponse)response.Object;
+                    MergeAndDeliverViaWebhookSuccessResponse mergeResponse = (MergeAndDeliverViaWebhookSuccessResponse)response.Object;
 
-                    Console.WriteLine("Compared URL - {0}", compareResponse.CompareUrl);
+                    Console.WriteLine("Total Records Count - {0}", mergeResponse.Records.Count);
+                    Console.WriteLine("Total Report URL - {0}",  mergeResponse.MergeReportDataUrl);
                 }
                 else
                 {
@@ -65,7 +69,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in creating document compare url - ", e);
+                Console.WriteLine("Exception in merging document - ", e);
             }
         }
 

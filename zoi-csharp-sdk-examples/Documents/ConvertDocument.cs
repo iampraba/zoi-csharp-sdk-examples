@@ -8,9 +8,9 @@ using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 
-namespace Writer
+namespace Documents
 {
-    class DeleteDocumentSession
+    class ConvertDocument
     {
         static void execute(String[] args)
         {
@@ -21,24 +21,42 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                CreateDocumentParameters parameter = new CreateDocumentParameters();
+                DocumentConversionParameters conversionParameters = new DocumentConversionParameters();
 
-                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(parameter);
+                conversionParameters.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
+
+                //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
+                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
+
+                //conversionParameters.Document = documentStreamWrapper;
+
+                DocumentConversionOutputOptions outputOptions = new DocumentConversionOutputOptions();
+
+                outputOptions.Format = "pdf";
+                outputOptions.Password = "****";
+                outputOptions.IncludeChanges = "all";
+                outputOptions.IncludeComments = "all";
+                outputOptions.DocumentName = "ConvertedFile.pdf";
+
+                conversionParameters.OutputOptions = outputOptions;
+
+                // TODO: Need to check where to pass the password parameter
+                // conversionParameters.Password = "****";
+
+                APIResponse<WriterResponseHandler> response = sdkOperations.ConvertDocument(conversionParameters);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
-                    string sessionId = createDocumentResponse.SessionId;
+                    FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
+                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "ConvertedFile.pdf");
+                    using (Stream inputStream = fileBodyWrapper.File.Stream)
+                    using (Stream outputStream = File.OpenWrite(outputFilePath))
+                    {
+                        inputStream.CopyTo(outputStream);
+                    }
 
-                    Console.WriteLine("Document Session To Be Deleted - {0}", sessionId);
-
-                    APIResponse<WriterResponseHandler> response1 = sdkOperations.DeleteSession(sessionId);
-
-                    DocumentSessionDeleteSuccessResponse deleteSuccessResponse = (DocumentSessionDeleteSuccessResponse)response1.Object;
-
-                    Console.WriteLine("Document Session Delete Status - {0}", deleteSuccessResponse.SessionDeleted);
-
+                    Console.WriteLine($"Converted document saved in output file path - {outputFilePath}");
                 }
                 else
                 {
@@ -54,7 +72,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in delete document session - ", e);
+                Console.WriteLine("Exception in convering document - ", e);
             }
         }
 

@@ -8,9 +8,9 @@ using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 
-namespace Writer
+namespace Documents
 {
-    class ConvertDocument
+    class PreviewDocument
     {
         static void execute(String[] args)
         {
@@ -21,42 +21,23 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                DocumentConversionParameters conversionParameters = new DocumentConversionParameters();
+                PreviewParameters parameters = new PreviewParameters();
 
-                conversionParameters.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
+                parameters.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
 
                 //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
                 //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
 
-                //conversionParameters.Document = documentStreamWrapper;
+                //parameters.Document = documentStreamWrapper;
 
-                DocumentConversionOutputOptions outputOptions = new DocumentConversionOutputOptions();
-
-                outputOptions.Format = "pdf";
-                outputOptions.Password = "****";
-                outputOptions.IncludeChanges = "all";
-                outputOptions.IncludeComments = "all";
-                outputOptions.DocumentName = "ConvertedFile.pdf";
-
-                conversionParameters.OutputOptions = outputOptions;
-
-                // TODO: Need to check where to pass the password parameter
-                // conversionParameters.Password = "****";
-
-                APIResponse<WriterResponseHandler> response = sdkOperations.ConvertDocument(conversionParameters);
+                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocumentPreview(parameters);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
-                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "ConvertedFile.pdf");
-                    using (Stream inputStream = fileBodyWrapper.File.Stream)
-                    using (Stream outputStream = File.OpenWrite(outputFilePath))
-                    {
-                        inputStream.CopyTo(outputStream);
-                    }
+                    PreviewResponse previewResponse = (PreviewResponse)response.Object;
 
-                    Console.WriteLine($"Converted document saved in output file path - {outputFilePath}");
+                    Console.WriteLine("Document Preview URL - {0}", previewResponse.PreviewUrl);
                 }
                 else
                 {
@@ -72,7 +53,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in convering document - ", e);
+                Console.WriteLine("Exception in creating document preview session url - ", e);
             }
         }
 

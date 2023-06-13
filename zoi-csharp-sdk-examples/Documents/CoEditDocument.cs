@@ -8,11 +8,11 @@ using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 
-namespace Writer
+namespace Documents
 {
-    class CreateDocument
+    class CoEditDocument
     {
-        static void Main(String[] args)
+        static void execute(String[] args)
         {
             try
             {
@@ -22,6 +22,13 @@ namespace Writer
 
                 V1Operations sdkOperations = new V1Operations();
                 CreateDocumentParameters createDocumentParams = new CreateDocumentParameters();
+
+                createDocumentParams.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
+
+                //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
+                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
+
+                //createDocumentParams.Document = documentStreamWrapper;
 
                 DocumentInfo documentInfo = new DocumentInfo();
 
@@ -110,7 +117,23 @@ namespace Writer
 
                     Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
                     Console.WriteLine("Document session id - {0}", documentResponse.SessionId);
-                    Console.WriteLine("Document session url - {0}", documentResponse.DocumentUrl);
+                    Console.WriteLine("Document session1 url - {0}", documentResponse.DocumentUrl);
+
+                    userInfo.UserId = "1000";
+                    userInfo.DisplayName = "Praba";
+
+                    createDocumentParams.UserInfo = userInfo;
+
+                    response = sdkOperations.CreateDocument(createDocumentParams);
+
+                    if (responseStatusCode >= 200 && responseStatusCode <= 299)
+                    {
+                        documentResponse = (CreateDocumentResponse) response.Object;
+
+                        Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
+                        Console.WriteLine("Document session2 id - {0}", documentResponse.SessionId);
+                        Console.WriteLine("Document session2 url - {0}", documentResponse.DocumentUrl);
+                    }
                 }
                 else
                 {

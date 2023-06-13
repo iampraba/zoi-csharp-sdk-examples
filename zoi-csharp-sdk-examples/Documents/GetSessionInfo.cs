@@ -7,10 +7,11 @@ using Com.Zoho.API.Authenticator;
 using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class CreateMergeTemplate
+    class GetSessionInfo
     {
         static void execute(String[] args)
         {
@@ -21,21 +22,26 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                MailMergeTemplateParameters parameters = new MailMergeTemplateParameters();
+                CreateDocumentParameters parameter = new CreateDocumentParameters();
 
-                parameters.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
-                parameters.MergeDataJsonUrl = "https://demo.office-integrator.com/data/candidates.json";
-
-                APIResponse<WriterResponseHandler> response = sdkOperations.CreateMailMergeTemplate(parameters);
+                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(parameter);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    CreateDocumentResponse documentResponse = (CreateDocumentResponse)response.Object;
+                    CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
+                    string sessionId = createDocumentResponse.SessionId;
 
-                    Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
-                    Console.WriteLine("Document session id - {0}", documentResponse.SessionId);
-                    Console.WriteLine("Document session url - {0}", documentResponse.DocumentUrl);
+                    Console.WriteLine("Created Document Session ID - {0}", sessionId);
+
+                    APIResponse<WriterResponseHandler> response1 = sdkOperations.GetSession(sessionId);
+
+                    SessionMeta sessionMeta = (SessionMeta)response1.Object;
+
+                    Console.WriteLine("Session status- {0}", sessionMeta.Status);
+                    Console.WriteLine("Session User ID - {0}", sessionMeta.UserInfo.UserId);
+                    Console.WriteLine("Session User Display Name - {0}", sessionMeta.UserInfo.DisplayName);
+                    Console.WriteLine("Session Expires on - {0}", sessionMeta.Info.ExpiresOn);
                 }
                 else
                 {
@@ -51,7 +57,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in creating merge template session url - ", e);
+                Console.WriteLine("Exception in getting session information of the document - ", e);
             }
         }
 

@@ -7,10 +7,11 @@ using Com.Zoho.API.Authenticator;
 using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class DeleteDocument
+    class WatermarkDocument
     {
         static void execute(String[] args)
         {
@@ -21,24 +22,36 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                CreateDocumentParameters parameter = new CreateDocumentParameters();
+                WatermarkParameters waterMarkParams = new WatermarkParameters();
 
-                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(parameter);
+                waterMarkParams.Url = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx";
+
+                WatermarkSettings waterMarkSettings = new WatermarkSettings();
+
+                waterMarkSettings.Type = "text";
+                waterMarkSettings.FontSize = 36;
+                waterMarkSettings.Opacity = 70.00;
+                waterMarkSettings.FontName = "Arial";
+                waterMarkSettings.FontColor = "#000000";
+                waterMarkSettings.Orientation = "horizontal";
+                waterMarkSettings.Text = "Sample Water Mark Text";
+
+                waterMarkParams.WatermarkSettings = waterMarkSettings;
+
+                APIResponse<WriterResponseHandler> response = sdkOperations.CreateWatermarkDocument(waterMarkParams);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
-                    string documentId = createDocumentResponse.DocumentId;
+                    FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
+                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "WaterMarkedDocument.docx");
+                    using (Stream inputStream = fileBodyWrapper.File.Stream)
+                    using (Stream outputStream = File.OpenWrite(outputFilePath))
+                    {
+                        inputStream.CopyTo(outputStream);
+                    }
 
-                    Console.WriteLine("Document To Be Deleted - {0}", documentId);
-
-                    APIResponse<WriterResponseHandler> response1 = sdkOperations.DeleteDocument(documentId);
-
-                    DocumentDeleteSuccessResponse deleteSuccessResponse = (DocumentDeleteSuccessResponse)response1.Object;
-
-                    Console.WriteLine("Document Delete Status - {0}", deleteSuccessResponse.DocumentDeleted);
-
+                    Console.WriteLine($"Watermark document saved in output file path - {outputFilePath}");
                 }
                 else
                 {
@@ -54,7 +67,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in delete document - ", e);
+                Console.WriteLine("Exception in watermarking document - ", e);
             }
         }
 

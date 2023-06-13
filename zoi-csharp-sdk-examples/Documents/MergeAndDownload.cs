@@ -9,9 +9,9 @@ using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class GetDocumentInfo
+    class MergeAndDownload
     {
         static void execute(String[] args)
         {
@@ -22,29 +22,35 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                CreateDocumentParameters parameter = new CreateDocumentParameters();
+                MergeAndDownloadDocumentParameters parameters = new MergeAndDownloadDocumentParameters();
 
-                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(parameter);
+                parameters.FileUrl = "https://demo.office-integrator.com/zdocs/OfferLetter.zdoc";
+                parameters.MergeDataJsonUrl = "https://demo.office-integrator.com/data/candidates.json";
+
+                //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
+                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
+
+                //parameters.FileUrl = documentStreamWrapper;
+
+                DocumentConversionOutputOptions outputOptions = new DocumentConversionOutputOptions();
+
+                parameters.OutputFormat = "pdf";
+                parameters.Password = "***";
+
+                APIResponse<WriterResponseHandler> response = sdkOperations.MergeAndDownloadDocument(parameters);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
-                    string documentId = createDocumentResponse.DocumentId;
+                    FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
+                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "MergeOutputDocument.pdf");
+                    using (Stream inputStream = fileBodyWrapper.File.Stream)
+                    using (Stream outputStream = File.OpenWrite(outputFilePath))
+                    {
+                        inputStream.CopyTo(outputStream);
+                    }
 
-                    Console.WriteLine("Document ID - {0}", documentId);
-
-                    APIResponse<WriterResponseHandler> response1 = sdkOperations.GetDocumentInfo(documentId);
-
-                    DocumentMeta documentMeta = (DocumentMeta)response1.Object;
-
-                    Console.WriteLine("Document ID - {0}", documentMeta.DocumentId); //No I18N
-                    Console.WriteLine("Document Name - {0}", documentMeta.DocumentName); //No I18N
-                    Console.WriteLine("Document Type - {0}", documentMeta.DocumentType); //No I18N
-                    Console.WriteLine("Document Expires on - {0}", documentMeta.ExpiresOn); //No I18N
-                    Console.WriteLine("Document Created on - {0}", documentMeta.CreatedTime); //No I18N
-                    Console.WriteLine("Active sessions count - {0}", documentMeta.CollaboratorsCount); //No I18N
-                    Console.WriteLine("Collaborators count - {0}", documentMeta.CollaboratorsCount); //No I18N
+                    Console.WriteLine($"Merged document saved in output file path - {outputFilePath}");
                 }
                 else
                 {
@@ -60,7 +66,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in getting document details - ", e);
+                Console.WriteLine("Exception in creating merge output file - ", e);
             }
         }
 

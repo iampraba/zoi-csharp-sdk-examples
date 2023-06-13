@@ -8,9 +8,9 @@ using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 
-namespace Writer
+namespace Documents
 {
-    class CoEditDocument
+    class EditDocument
     {
         static void execute(String[] args)
         {
@@ -103,7 +103,7 @@ namespace Writer
                 callbackSettings.Timeout = 10000;
                 callbackSettings.SaveFormat = "docx";
                 callbackSettings.HttpMethodType = "post";
-                callbackSettings.SaveUrlParams = saveUrlParams;
+                //callbackSettings.SaveUrlParams = saveUrlParams;
                 callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157123434d4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
 
                 createDocumentParams.CallbackSettings = callbackSettings;
@@ -117,23 +117,7 @@ namespace Writer
 
                     Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
                     Console.WriteLine("Document session id - {0}", documentResponse.SessionId);
-                    Console.WriteLine("Document session1 url - {0}", documentResponse.DocumentUrl);
-
-                    userInfo.UserId = "1000";
-                    userInfo.DisplayName = "Praba";
-
-                    createDocumentParams.UserInfo = userInfo;
-
-                    response = sdkOperations.CreateDocument(createDocumentParams);
-
-                    if (responseStatusCode >= 200 && responseStatusCode <= 299)
-                    {
-                        documentResponse = (CreateDocumentResponse) response.Object;
-
-                        Console.WriteLine("Document id - {0}", documentResponse.DocumentId);
-                        Console.WriteLine("Document session2 id - {0}", documentResponse.SessionId);
-                        Console.WriteLine("Document session2 url - {0}", documentResponse.DocumentUrl);
-                    }
+                    Console.WriteLine("Document session url - {0}", documentResponse.DocumentUrl);
                 }
                 else
                 {
@@ -144,7 +128,7 @@ namespace Writer
                     string errorKeyName = invalidConfiguration.KeyName;
                     string errorParameterName = invalidConfiguration.ParameterName;*/
 
-                    Console.WriteLine("configuration error - {0}", errorMessage);
+                    Console.WriteLine("Document configuration error - {0}", errorMessage);
                 }
             }
             catch (System.Exception e)

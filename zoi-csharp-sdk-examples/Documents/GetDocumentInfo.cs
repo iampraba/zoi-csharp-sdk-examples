@@ -9,9 +9,9 @@ using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class MergeAndDeliver
+    class GetDocumentInfo
     {
         static void execute(String[] args)
         {
@@ -22,38 +22,29 @@ namespace Writer
                 initializeSdk();
 
                 V1Operations sdkOperations = new V1Operations();
-                MergeAndDeliverViaWebhookParameters parameters = new MergeAndDeliverViaWebhookParameters();
+                CreateDocumentParameters parameter = new CreateDocumentParameters();
 
-                parameters.FileUrl = "https://demo.office-integrator.com/zdocs/OfferLetter.zdoc";
-                parameters.MergeDataJsonUrl = "https://demo.office-integrator.com/data/candidates.json";
-
-                //String inputFilePath = "/Users/praba-2086/Desktop/writer.docx";
-                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
-
-                //parameters.FileUrl = documentStreamWrapper;
-
-                DocumentConversionOutputOptions outputOptions = new DocumentConversionOutputOptions();
-
-                parameters.OutputFormat = "zdoc";
-                parameters.MergeTo = "separatedoc";
-                parameters.Password = "***";
-
-                MailMergeWebhookSettings webhookSettings = new MailMergeWebhookSettings();
-
-                webhookSettings.InvokeUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157a25e63fc4dfd4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
-                webhookSettings.InvokePeriod = "oncomplete";
-
-                parameters.Webhook = webhookSettings;
-
-                APIResponse<WriterResponseHandler> response = sdkOperations.MergeAndDeliverViaWebhook(parameters);
+                APIResponse<WriterResponseHandler> response = sdkOperations.CreateDocument(parameter);
                 int responseStatusCode = response.StatusCode;
 
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
-                    MergeAndDeliverViaWebhookSuccessResponse mergeResponse = (MergeAndDeliverViaWebhookSuccessResponse)response.Object;
+                    CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
+                    string documentId = createDocumentResponse.DocumentId;
 
-                    Console.WriteLine("Total Records Count - {0}", mergeResponse.Records.Count);
-                    Console.WriteLine("Total Report URL - {0}",  mergeResponse.MergeReportDataUrl);
+                    Console.WriteLine("Document ID - {0}", documentId);
+
+                    APIResponse<WriterResponseHandler> response1 = sdkOperations.GetDocumentInfo(documentId);
+
+                    DocumentMeta documentMeta = (DocumentMeta)response1.Object;
+
+                    Console.WriteLine("Document ID - {0}", documentMeta.DocumentId); //No I18N
+                    Console.WriteLine("Document Name - {0}", documentMeta.DocumentName); //No I18N
+                    Console.WriteLine("Document Type - {0}", documentMeta.DocumentType); //No I18N
+                    Console.WriteLine("Document Expires on - {0}", documentMeta.ExpiresOn); //No I18N
+                    Console.WriteLine("Document Created on - {0}", documentMeta.CreatedTime); //No I18N
+                    Console.WriteLine("Active sessions count - {0}", documentMeta.CollaboratorsCount); //No I18N
+                    Console.WriteLine("Collaborators count - {0}", documentMeta.CollaboratorsCount); //No I18N
                 }
                 else
                 {
@@ -69,7 +60,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in merging document - ", e);
+                Console.WriteLine("Exception in getting document details - ", e);
             }
         }
 

@@ -7,11 +7,10 @@ using Com.Zoho.API.Authenticator;
 using Com.Zoho.API.Logger;
 using static Com.Zoho.API.Logger.Logger;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 
-namespace Writer
+namespace Documents
 {
-    class GetSessionInfo
+    class DeleteDocument
     {
         static void execute(String[] args)
         {
@@ -30,18 +29,16 @@ namespace Writer
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
                     CreateDocumentResponse createDocumentResponse = (CreateDocumentResponse)response.Object;
-                    string sessionId = createDocumentResponse.SessionId;
+                    string documentId = createDocumentResponse.DocumentId;
 
-                    Console.WriteLine("Created Document Session ID - {0}", sessionId);
+                    Console.WriteLine("Document To Be Deleted - {0}", documentId);
 
-                    APIResponse<WriterResponseHandler> response1 = sdkOperations.GetSession(sessionId);
+                    APIResponse<WriterResponseHandler> response1 = sdkOperations.DeleteDocument(documentId);
 
-                    SessionMeta sessionMeta = (SessionMeta)response1.Object;
+                    DocumentDeleteSuccessResponse deleteSuccessResponse = (DocumentDeleteSuccessResponse)response1.Object;
 
-                    Console.WriteLine("Session status- {0}", sessionMeta.Status);
-                    Console.WriteLine("Session User ID - {0}", sessionMeta.UserInfo.UserId);
-                    Console.WriteLine("Session User Display Name - {0}", sessionMeta.UserInfo.DisplayName);
-                    Console.WriteLine("Session Expires on - {0}", sessionMeta.Info.ExpiresOn);
+                    Console.WriteLine("Document Delete Status - {0}", deleteSuccessResponse.DocumentDeleted);
+
                 }
                 else
                 {
@@ -57,7 +54,7 @@ namespace Writer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("Exception in getting session information of the document - ", e);
+                Console.WriteLine("Exception in delete document - ", e);
             }
         }
 
