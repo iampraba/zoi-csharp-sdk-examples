@@ -2,11 +2,19 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <Description>Office Integrator C# SDK Example code.</Description>
+    <Authors>Zoho Office Integrator Team</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
     <TargetFramework>net7.0</TargetFramework>
+    <PackageId>zoi-csharp-sdk-examples</PackageId>
+    <PackageVersion>1.0.1</PackageVersion>
     <RootNamespace>zoi_csharp_sdk_examples</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateProgramFile>false</GenerateProgramFile>
+    <Title>Zoho Office Integrator C# SDK examples</Title>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +29,9 @@
     <Folder Include="Spreadsheet\" />
     <Folder Include="Presentation\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="zoi-csharp-sdk" Version="1.0.4" />
   </ItemGroup>
