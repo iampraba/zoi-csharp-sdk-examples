@@ -26,6 +26,28 @@ namespace Documents
                 parameters.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
                 parameters.MergeDataJsonUrl = "https://demo.office-integrator.com/data/candidates.json";
 
+                Dictionary<string, object> saveUrlParams = new Dictionary<string, object>();
+
+                saveUrlParams.Add("id", 123456789);
+                saveUrlParams.Add("auth_token", "oswedf32rk");
+
+                Dictionary<string, object> saveUrlHeaders = new Dictionary<string, object>();
+
+                saveUrlHeaders.Add("header1", "value1");
+                saveUrlHeaders.Add("header2", "value2");
+
+                CallbackSettings callbackSettings = new CallbackSettings();
+
+                callbackSettings.Retries = 2;
+                callbackSettings.Timeout = 10000;
+                callbackSettings.SaveFormat = "docx";
+                callbackSettings.HttpMethodType = "post";
+                callbackSettings.SaveUrlParams = saveUrlParams;
+                callbackSettings.SaveUrlHeaders = saveUrlHeaders;
+                callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157123434d4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
+
+                parameters.CallbackSettings = callbackSettings;
+
                 APIResponse<WriterResponseHandler> response = sdkOperations.CreateMailMergeTemplate(parameters);
                 int responseStatusCode = response.StatusCode;
 

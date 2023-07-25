@@ -22,6 +22,6 @@
     <Folder Include="Presentation\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="zoi-csharp-sdk" Version="1.0.3" />
+    <PackageReference Include="zoi-csharp-sdk" Version="1.0.4" />
   </ItemGroup>
 </Project>
