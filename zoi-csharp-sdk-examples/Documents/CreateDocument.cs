@@ -90,6 +90,11 @@ namespace Documents
                 saveUrlParams.Add("id", 123456789);
                 saveUrlParams.Add("auth_token", "oswedf32rk");
 
+                Dictionary<string, object> saveUrlHeaders = new Dictionary<string, object>();
+
+                saveUrlHeaders.Add("header1", "value1");
+                saveUrlHeaders.Add("header2", "value2");
+
                 CallbackSettings callbackSettings = new CallbackSettings();
 
                 callbackSettings.Retries = 2;
@@ -97,7 +102,8 @@ namespace Documents
                 callbackSettings.SaveFormat = "docx";
                 callbackSettings.HttpMethodType = "post";
                 callbackSettings.SaveUrlParams = saveUrlParams;
-                callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157123434d4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
+                callbackSettings.SaveUrlHeaders = saveUrlHeaders;
+                callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157a25e63fc4dfd4e6e00cc3da2a1419fef8b7e87c0e12a5c891dc72ff";
 
                 createDocumentParams.CallbackSettings = callbackSettings;
 

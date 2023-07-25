@@ -70,10 +70,16 @@ namespace Spreadsheet
                 saveUrlParams.Add("id", 123456789);
                 saveUrlParams.Add("auth_token", "oswedf32rk");
 
+                Dictionary<string, object> saveUrlHeaders = new Dictionary<string, object>();
+
+                saveUrlHeaders.Add("header1", "value1");
+                saveUrlHeaders.Add("header2", "value2");
+
                 SheetCallbackSettings callbackSettings = new SheetCallbackSettings();
 
                 callbackSettings.SaveFormat = "xlsx";
                 callbackSettings.SaveUrlParams = saveUrlParams;
+                callbackSettings.SaveUrlHeaders = saveUrlHeaders;
                 callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157123434d4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
 
                 parameters.CallbackSettings = callbackSettings;

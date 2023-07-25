@@ -62,10 +62,11 @@ namespace Presentation
                 saveUrlParams.Add("id", 123456789);
                 saveUrlParams.Add("auth_token", "oswedf32rk");
 
-                ShowCallbackSettings callbackSettings = new ShowCallbackSettings();
+                CallbackSettings callbackSettings = new CallbackSettings();
 
                 callbackSettings.SaveFormat = "pptx";
                 callbackSettings.SaveUrl = "https://officeintegrator.zoho.com/v1/api/webhook/savecallback/601e12157123434d4e6e00cc3da2406df2b9a1d84a903c6cfccf92c8286";
+                callbackSettings.SaveUrlParams = saveUrlParams; 
 
                 parameters.CallbackSettings = callbackSettings;
 
