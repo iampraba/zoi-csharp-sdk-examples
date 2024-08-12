@@ -33,6 +33,6 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="zoi-csharp-sdk" Version="1.0.4" />
+    <ProjectReference Include="..\..\zoi-csharp-sdk\OfficeIntegrator.csproj" />
   </ItemGroup>
 </Project>

@@ -1,12 +1,11 @@
-﻿using System;
-using Com.Zoho.Util;
+﻿using Com.Zoho.API.Authenticator;
+using Com.Zoho.Officeintegrator;
+using Com.Zoho.Officeintegrator.Dc;
+using Com.Zoho.Officeintegrator.Logger;
+using Com.Zoho.Officeintegrator.Util;
 using Com.Zoho.Officeintegrator.V1;
-using Com.Zoho;
-using Com.Zoho.Dc;
-using Com.Zoho.API.Authenticator;
-using Com.Zoho.API.Logger;
-using static Com.Zoho.API.Logger.Logger;
-using System.Collections.Generic;
+using static Com.Zoho.Officeintegrator.Logger.Logger;
+
 
 namespace Presentation
 {
@@ -26,9 +25,10 @@ namespace Presentation
                 //Either use url as document source or attach the document in request body use below methods
                 conversionParameters.Url = "https://demo.office-integrator.com/samples/show/Zoho_Show.pptx";
 
-                //String inputFilePath = "<input file path>";
-                //StreamWrapper fileStreamWrapper = new StreamWrapper(inputFilePath);
-                //parameters.Document = fileStreamWrapper;
+                //String inputFilePath = Path.Combine(System.Environment.CurrentDirectory, "../../../sample_documents/Zoho_Show.pptx");
+                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
+
+                //conversionParameters.Document = documentStreamWrapper;
 
                 conversionParameters.Format = "pdf";
 
@@ -38,7 +38,7 @@ namespace Presentation
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
                     FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
-                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "ConvertedPresentationFile.pdf");
+                    string outputFilePath = Path.Combine(System.Environment.CurrentDirectory, "../../../sample_documents/ConvertedPresentationFile.pdf");
                     using (Stream inputStream = fileBodyWrapper.File.Stream)
                     using (Stream outputStream = File.OpenWrite(outputFilePath))
                     {
@@ -71,21 +71,28 @@ namespace Presentation
 
             try
             {
-                Apikey apikey = new Apikey("2ae438cf864488657cc9754a27daa480", Com.Zoho.Util.Constants.PARAMS);
-                UserSignature user = new UserSignature("john@zylker.com"); //No I18N
+                //Sdk application log configuration
                 Logger logger = new Logger.Builder()
-                                    .Level(Levels.INFO)
-                                    .FilePath("./log.txt") //No I18N
-                                    .Build();
+                        .Level(Levels.INFO)
+                        //.filePath("<file absolute path where logs would be written>") //No I18N
+                        .Build();
 
-                Com.Zoho.Dc.DataCenter.Environment environment = new DataCenter.Environment("", "https://api.office-integrator.com", "", "");
+                List<IToken> tokens = new List<IToken>();
+                Auth auth = new Auth.Builder()
+                    .AddParam("apikey", "2ae438cf864488657cc9754a27daa480") //Update this apikey with your own apikey signed up in office inetgrator service
+                    .AuthenticationSchema(new Authentication.TokenFlow())
+                    .Build();
+
+                tokens.Add(auth);
+
+                Com.Zoho.Officeintegrator.Dc.Environment environment = new APIServer.Production("https://api.office-integrator.com"); // Refer this help page for api end point domain details -  https://www.zoho.com/officeintegrator/api/v1/getting-started.html
 
                 new Initializer.Builder()
-                    .User(user)
                     .Environment(environment)
-                    .Token(apikey)
+                    .Tokens(tokens)
                     .Logger(logger)
                     .Initialize();
+
                 status = true;
             }
             catch (System.Exception e)
