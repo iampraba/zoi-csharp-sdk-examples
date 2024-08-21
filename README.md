@@ -17,7 +17,7 @@ You can include the SDK to your project using:
 - Install [**C# SDK**](https://www.nuget.org/packages/zoi-csharp-sdk) and other dependencies then build the project
     - Navigate to the folder **zoi-csharp-sdk-examples**
         ```sh
-        cd zoi-csharp-sdk-examples/zoi-csharp-sdk-examples
+        cd zoi-csharp-sdk-examples/office-integrator-csharp-sdk-examples
         ```
 
     - Run the command below:
@@ -25,16 +25,12 @@ You can include the SDK to your project using:
       dotnet build
       ```
 
-- Now go to any of the folder Documents, Spreadsheet or Presentation.
-    ```sh
-    cd Documents
-    ```
-
-- Run any of the example files in those folders.
+- Use following command to run the example code.
     ```sh
     dotnet run
     ```
-- You can make the changes in any of the example code and test if your changes get reflected in the output.
+    - Change the method name as **Main** in any sample code and then run above command to execute that sample code.  
+
  
 - Check the [documentation page](https://www.zoho.com/officeplatform/integrator/api/v1/) for all possible customizations.
 
