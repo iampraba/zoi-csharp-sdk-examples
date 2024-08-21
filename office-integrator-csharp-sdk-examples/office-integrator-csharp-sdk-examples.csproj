@@ -7,7 +7,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>zoi-csharp-sdk-examples</PackageId>
-    <PackageVersion>1.0.1</PackageVersion>
+    <PackageVersion>1.0.2</PackageVersion>
     <RootNamespace>zoi_csharp_sdk_examples</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
