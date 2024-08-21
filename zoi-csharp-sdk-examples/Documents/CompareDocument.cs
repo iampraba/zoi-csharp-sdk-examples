@@ -1,12 +1,10 @@
-﻿using System;
-using Com.Zoho.Util;
+﻿using Com.Zoho.API.Authenticator;
+using Com.Zoho.Officeintegrator;
+using Com.Zoho.Officeintegrator.Dc;
+using Com.Zoho.Officeintegrator.Logger;
+using Com.Zoho.Officeintegrator.Util;
 using Com.Zoho.Officeintegrator.V1;
-using Com.Zoho;
-using Com.Zoho.Dc;
-using Com.Zoho.API.Authenticator;
-using Com.Zoho.API.Logger;
-using static Com.Zoho.API.Logger.Logger;
-using System.Collections.Generic;
+using static Com.Zoho.Officeintegrator.Logger.Logger;
 
 namespace Documents
 {
@@ -23,21 +21,22 @@ namespace Documents
                 V1Operations sdkOperations = new V1Operations();
                 CompareDocumentParameters compareParameters = new CompareDocumentParameters();
 
+                //Either use url as document source or attach the document in request body use below methods
                 compareParameters.Url1 = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx";
                 compareParameters.Url2 = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v1.docx";
 
                 String file1Name = "MS_Word_Document_v0.docx";
                 String file2Name = "MS_Word_Document_v1.docx";
 
-                /* String inputFile1Path = Path.Combine(Environment.CurrentDirectory, "sample_documents", "MS_Word_Document_v0.docx");
-                StreamWrapper file1StreamWrapper = new StreamWrapper(inputFile1Path);
+                //String inputFile1Path = Path.Combine(System.Environment.CurrentDirectory, "../../../sample_documents/MS_Word_Document_v0.docx");
+                //StreamWrapper file1StreamWrapper = new StreamWrapper(inputFile1Path);
 
-                compareParameters.Document1 = file1StreamWrapper;
+                //compareParameters.Document1 = file1StreamWrapper;
 
-                String inputFile2Path = Path.Combine(Environment.CurrentDirectory, "sample_documents", "MS_Word_Document_v1.docx");
-                StreamWrapper file2StreamWrapper = new StreamWrapper(inputFile2Path);
+                //String inputFile2Path = Path.Combine(System.Environment.CurrentDirectory, "../../../sample_documents/MS_Word_Document_v1.docx");
+                //StreamWrapper file2StreamWrapper = new StreamWrapper(inputFile2Path);
 
-                compareParameters.Document2 = file2StreamWrapper; */
+                //compareParameters.Document2 = file2StreamWrapper;
 
                 compareParameters.Lang = "en";
                 compareParameters.Title = file1Name + " vs " + file2Name;
@@ -75,21 +74,28 @@ namespace Documents
 
             try
             {
-                Apikey apikey = new Apikey("2ae438cf864488657cc9754a27daa480", Com.Zoho.Util.Constants.PARAMS);
-                UserSignature user = new UserSignature("john@zylker.com"); //No I18N
+                //Sdk application log configuration
                 Logger logger = new Logger.Builder()
-                                    .Level(Levels.INFO)
-                                    .FilePath("./log.txt") //No I18N
-                                    .Build();
+                        .Level(Levels.INFO)
+                        //.filePath("<file absolute path where logs would be written>") //No I18N
+                        .Build();
 
-                Com.Zoho.Dc.DataCenter.Environment environment = new DataCenter.Environment("", "https://api.office-integrator.com", "", "");
+                List<IToken> tokens = new List<IToken>();
+                Auth auth = new Auth.Builder()
+                    .AddParam("apikey", "2ae438cf864488657cc9754a27daa480") //Update this apikey with your own apikey signed up in office inetgrator service
+                    .AuthenticationSchema(new Authentication.TokenFlow())
+                    .Build();
+
+                tokens.Add(auth);
+
+                Com.Zoho.Officeintegrator.Dc.Environment environment = new APIServer.Production("https://api.office-integrator.com"); // Refer this help page for api end point domain details -  https://www.zoho.com/officeintegrator/api/v1/getting-started.html
 
                 new Initializer.Builder()
-                    .User(user)
                     .Environment(environment)
-                    .Token(apikey)
+                    .Tokens(tokens)
                     .Logger(logger)
                     .Initialize();
+
                 status = true;
             }
             catch (System.Exception e)

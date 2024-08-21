@@ -1,13 +1,10 @@
-﻿using System;
-using Com.Zoho.Util;
+﻿using Com.Zoho.API.Authenticator;
+using Com.Zoho.Officeintegrator;
+using Com.Zoho.Officeintegrator.Dc;
+using Com.Zoho.Officeintegrator.Logger;
+using Com.Zoho.Officeintegrator.Util;
 using Com.Zoho.Officeintegrator.V1;
-using Com.Zoho;
-using Com.Zoho.Dc;
-using Com.Zoho.API.Authenticator;
-using Com.Zoho.API.Logger;
-using static Com.Zoho.API.Logger.Logger;
-using System.Collections.Generic;
-using System.Reflection.Emit;
+using static Com.Zoho.Officeintegrator.Logger.Logger;
 
 namespace Documents
 {
@@ -24,17 +21,23 @@ namespace Documents
                 V1Operations sdkOperations = new V1Operations();
                 WatermarkParameters waterMarkParams = new WatermarkParameters();
 
-                waterMarkParams.Url = "https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx";
+                //Either use url as document source or attach the document in request body use below methods
+                waterMarkParams.Url = "https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx";
+
+                //String inputFilePath = Path.Combine(System.Environment.CurrentDirectory, "../../../sample_documents/Graphic-Design-Proposal.docx");
+                //StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
+
+                //waterMarkParams.Document = documentStreamWrapper;
 
                 WatermarkSettings waterMarkSettings = new WatermarkSettings();
 
-                waterMarkSettings.Type = "text";
+                waterMarkSettings.Type = "text"; 
                 waterMarkSettings.FontSize = 36;
                 waterMarkSettings.Opacity = 70.00;
                 waterMarkSettings.FontName = "Arial";
                 waterMarkSettings.FontColor = "#000000";
                 waterMarkSettings.Orientation = "horizontal";
-                waterMarkSettings.Text = "Sample Water Mark Text";
+                waterMarkSettings.Text = "Zoho Office Integrator - Zoho Writer";
 
                 waterMarkParams.WatermarkSettings = waterMarkSettings;
 
@@ -44,7 +47,7 @@ namespace Documents
                 if (responseStatusCode >= 200 && responseStatusCode <= 299)
                 {
                     FileBodyWrapper fileBodyWrapper = (FileBodyWrapper)response.Object;
-                    string outputFilePath = Path.Combine(Environment.CurrentDirectory, "WaterMarkedDocument.docx");
+                    string outputFilePath = Path.Combine(System.Environment.CurrentDirectory, "../../../sample_documents/WaterMarkedDocument.docx");
                     using (Stream inputStream = fileBodyWrapper.File.Stream)
                     using (Stream outputStream = File.OpenWrite(outputFilePath))
                     {
@@ -77,21 +80,28 @@ namespace Documents
 
             try
             {
-                Apikey apikey = new Apikey("2ae438cf864488657cc9754a27daa480", Com.Zoho.Util.Constants.PARAMS);
-                UserSignature user = new UserSignature("john@zylker.com"); //No I18N
+                //Sdk application log configuration
                 Logger logger = new Logger.Builder()
-                                    .Level(Levels.INFO)
-                                    .FilePath("./log.txt") //No I18N
-                                    .Build();
+                        .Level(Levels.INFO)
+                        //.filePath("<file absolute path where logs would be written>") //No I18N
+                        .Build();
 
-                Com.Zoho.Dc.DataCenter.Environment environment = new DataCenter.Environment("", "https://api.office-integrator.com", "", "");
+                List<IToken> tokens = new List<IToken>();
+                Auth auth = new Auth.Builder()
+                    .AddParam("apikey", "2ae438cf864488657cc9754a27daa480") //Update this apikey with your own apikey signed up in office inetgrator service
+                    .AuthenticationSchema(new Authentication.TokenFlow())
+                    .Build();
+
+                tokens.Add(auth);
+
+                Com.Zoho.Officeintegrator.Dc.Environment environment = new APIServer.Production("https://api.office-integrator.com"); // Refer this help page for api end point domain details -  https://www.zoho.com/officeintegrator/api/v1/getting-started.html
 
                 new Initializer.Builder()
-                    .User(user)
                     .Environment(environment)
-                    .Token(apikey)
+                    .Tokens(tokens)
                     .Logger(logger)
                     .Initialize();
+
                 status = true;
             }
             catch (System.Exception e)
